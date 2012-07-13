@@ -3,8 +3,8 @@
 module SCV
 
   class HTMLwithGists < Redcarpet::Render::HTML
-    def block_code(c, l)
-      l == 'gist' ? "<script src='https://gist.github.com/#{c}.js'></script>" : c
+    def block_code(code, lang)
+      lang == 'gist' ? "<script src='https://gist.github.com/#{c}.js'></script>" : code
     end
   end
 
