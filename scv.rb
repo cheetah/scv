@@ -70,19 +70,15 @@ module SCV
     def method_missing(name, *args, &blk)
       has_key?(name.to_sym) ? self[name.to_sym] : super(name, *args, &blk)
     end
-
   end
 
   module Application
-
-    STATIC_PATH = File.join(File.dirname(__FILE__), 'static')
-
     def page(name, &block)
-      IO.write("#{STATIC_PATH}/#{name}", yield)
+      write_file(name, &block)
     end
 
     def render(view, opts = {:layout => :layout})
-      @views ||= Templates.new
+      @views ||= Views.new
 
       if opts[:layout]
         @views[opts[:layout]].render(self) { @views[view].render(self) }
@@ -91,47 +87,22 @@ module SCV
       end
     end
 
+    def settings
+      Settings.instance
+    end
+
+    def set(key, value)
+      Settings.instance[key.to_sym] = value
+    end
+
+    private
+    def write_file(file, &block)
+      dirname = File.dirname("#{Settings.instance.static}/#{file}")
+      Dir.mkdir(dirname) unless Dir.exist?(dirname)
+      IO.write("#{Settings.instance.static}/#{file}", yield)
+    end
   end
 
 end
 
 extend SCV::Application
-
-@pages = SCV::Page.parse_all
-
-page 'index.html' do
-  'abc'
-end
-
-page 'post.html' do
-  @post = @pages.last
-  render :post
-end
-
-page 'post1.html' do
-  @post = @pages.first
-  render :post
-end
-
-page 'post2.html' do
-  @post = @pages.first
-  render :post
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
