@@ -1,6 +1,21 @@
-%w(rubygems bundler/setup redcarpet tilt slim pp).each { |r| require r }
+%w(rubygems bundler/setup singleton redcarpet tilt slim pp).each { |r| require r }
 
 module SCV
+
+  class Settings < Hash
+    include Singleton
+
+    def initialize
+      self[:root]   = File.expand_path(File.dirname(__FILE__))
+      self[:views]  = File.join(root, 'views')
+      self[:pages]  = File.join(root, 'pages', '*.md')
+      self[:static] = File.join(root, 'static')
+    end
+
+    def method_missing(name, *args, &blk)
+      has_key?(name.to_sym) ? self[name.to_sym] : super(name, *args, &blk)
+    end
+  end
 
   class HTMLwithGists < Redcarpet::Render::HTML
     def block_code(code, lang)
@@ -9,14 +24,12 @@ module SCV
   end
 
   class Page
-
     RENDERER = Redcarpet::Markdown.new(HTMLwithGists, :fenced_code_blocks => true)
-    ENTRIES_PATH = File.join(File.dirname(__FILE__), 'entries', '*.md')
 
     attr_reader :name, :headers, :tags
 
     def self.parse_all
-      Dir[ENTRIES_PATH].map { |path| self.new(path) }
+      Dir[Settings.instance.pages].map { |path| self.new(path) }
     end
 
     def initialize(path)
@@ -54,15 +67,11 @@ module SCV
     def render
       RENDERER.render(@body)
     end
-
   end
 
-  class Templates < Hash
-
-    TEMPLATES_PATH = File.join(File.dirname(__FILE__), 'templates')
-
+  class Views < Hash
     def initialize
-      Dir[File.join(TEMPLATES_PATH, '*')].each do |template|
+      Dir[File.join(Settings.instance.views, '**/*.*')].each do |template|
         self[File.basename(template, '.*').to_sym] = Tilt.new(template)
       end
     end
