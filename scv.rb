@@ -1,4 +1,4 @@
-%w(rubygems bundler/setup singleton redcarpet tilt slim pp).each { |r| require r }
+%w(rubygems bundler/setup singleton pathname redcarpet tilt slim pp).each { |r| require r }
 
 module SCV
 
@@ -75,8 +75,12 @@ module SCV
 
   class Views < Hash
     def initialize
-      Dir[File.join(Settings.instance.views, '**/*.*')].each do |template|
-        self[File.basename(template, '.*').to_sym] = Tilt.new(template)
+      views_path = Pathname.new(Settings.instance.views)
+
+      Dir[File.join(Settings.instance.views, '**/*.*')].each do |view|
+        view_name       = Pathname.new(view).relative_path_from(views_path).\
+                                             sub_ext('').to_s.to_sym
+        self[view_name] = Tilt.new(view)
       end
     end
 
@@ -104,7 +108,7 @@ module SCV
 
     def render(view, opts = {:layout => :layout})
       @views ||= Views.new
-
+      
       if opts[:layout]
         @views[opts[:layout]].render(self) { @views[view].render(self) }
       else
