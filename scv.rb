@@ -85,7 +85,19 @@ module SCV
     end
   end
 
+  module Helpers
+    def settings
+      Settings.instance
+    end
+
+    def set(key, value)
+      Settings.instance[key.to_sym] = value
+    end
+  end
+
   module Application
+    include Helpers
+
     def page(name, &block)
       write_file(name, &block)
     end
@@ -98,14 +110,6 @@ module SCV
       else
         @views[view].render(self)
       end
-    end
-
-    def settings
-      Settings.instance
-    end
-
-    def set(key, value)
-      Settings.instance[key.to_sym] = value
     end
 
     private
