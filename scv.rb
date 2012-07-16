@@ -52,6 +52,10 @@ module SCV
       @tags = @headers.has_key?(:tags) ? @headers[:tags].split(/,\s+/) : []
     end
 
+    def post?
+      @headers.has_key?(:date)
+    end
+
     def tagged?
       @tags.size > 0
     end
