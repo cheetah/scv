@@ -116,7 +116,7 @@ module SCV
     def write_file(file, &block)
       dirname = File.dirname("#{Settings.instance.static}/#{file}")
       Dir.mkdir(dirname) unless Dir.exist?(dirname)
-      IO.write("#{Settings.instance.static}/#{file}", yield)
+      IO.write(File.join(Settings.instance.static, file), yield)
     end
   end
 
