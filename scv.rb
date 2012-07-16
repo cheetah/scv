@@ -118,9 +118,13 @@ module SCV
       end
     end
 
+    def style(name, view)
+      write_file(name) { render(view, :layout => false) }
+    end
+
     private
     def write_file(file, &block)
-      dirname = File.dirname("#{Settings.instance.static}/#{file}")
+      dirname = File.dirname(File.join(Settings.instance.static, file))
       Dir.mkdir(dirname) unless Dir.exist?(dirname)
       IO.write(File.join(Settings.instance.static, file), yield)
     end
