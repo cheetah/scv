@@ -1,4 +1,4 @@
-%w(rubygems bundler/setup singleton pathname redcarpet tilt slim pp).each { |r| require r }
+%w(rubygems bundler/setup singleton pathname padrino-helpers redcarpet tilt slim sass).each { |r| require r }
 
 module SCV
 
@@ -90,6 +90,8 @@ module SCV
   end
 
   module Helpers
+    include Padrino::Helpers::FormatHelpers
+
     def settings
       Settings.instance
     end
