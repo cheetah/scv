@@ -110,7 +110,7 @@ module SCV
 
     def render(view, opts = {:layout => :layout})
       @views ||= Views.new
-      
+
       if opts[:layout]
         @views[opts[:layout]].render(self) { @views[view].render(self) }
       else
