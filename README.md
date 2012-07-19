@@ -2,7 +2,7 @@
 SCV is a simply Sinatra-like Ruby DSL to generate static sites. It also contains markdown pages and blog posts parser.
 
 ### Approximate workflow
-```
+```ruby
 require 'scv'
 
 set :static, File.join(settings.root, 'public')
